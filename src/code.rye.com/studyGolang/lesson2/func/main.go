@@ -34,6 +34,7 @@ func intSum3(a ...int) int {
 }
 
 // 注：固定参数和可变参数同时出现时，可变参数要放在最后
+// go语言的函数中没有默认参数
 func intSum4(a int, b ...int) int {
 	// fmt.Println(a) // []
 	// fmt.Printf("%T\n", a) // []int
@@ -44,16 +45,31 @@ func intSum4(a int, b ...int) int {
 	return ret
 }
 
+// Go语言中函数参数类型简写
+func intSum5(a, b int) int {
+	ret := a + b
+	return ret
+}
+
+// 定义具有多个返回值的函数
+func calc(a, b int) (sum, sub int) {
+	sum = a + b
+	sub = a - b
+	return
+}
+
 func main()  {
 	// 函数调用
-	sayHello()
+	// sayHello()
 
-	name := "rye"
-	sayHello2(name)
+	// name := "rye"
+	// sayHello2(name)
 
-	r := intSum(10, 20)
-	fmt.Println(r)
+	// r := intSum(10, 20)
+	// fmt.Println(r)
 
-	fmt.Println(intSum3(10, 20, 3, 4))
-	fmt.Println(intSum4(1, 20, 3, 4)) 
+	// fmt.Println(intSum3(10, 20, 3, 4))
+	// fmt.Println(intSum4(1, 20, 3, 4)) 
+	x, y := calc(100, 200)
+	fmt.Println(x, y)
 }
