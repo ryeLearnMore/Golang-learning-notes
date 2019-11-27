@@ -51,7 +51,7 @@ func intSum5(a, b int) int {
 	return ret
 }
 
-// 定义具有多个返回值的函数
+// 定义具有多个返回值的函数，且支持简写
 func calc(a, b int) (sum, sub int) {
 	sum = a + b
 	sub = a - b
