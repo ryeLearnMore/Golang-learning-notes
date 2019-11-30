@@ -50,7 +50,18 @@ func main()  {
 	fmt.Println(nazha.name)
 
 	// 结构体初始化
+	// 只填值初始化
 	var stu1 = student{
-		
+		"新垣结衣",
+		18,
+		"女",
+		[]string{"我老婆"},
 	}
+	fmt.Println(stu1.name, stu1.hobby)
+	// 键值对初始化
+	var stu2 = &student{
+		name: "石原里美",
+		age: 18,
+	}
+	fmt.Println(stu2.name, stu2.age, stu2.gender)
 }
