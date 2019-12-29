@@ -1,0 +1,3 @@
+[2019-12-29 20:53:44.329][main.go:11][main.main][ERROR]Info 这是一条测试的日志
+[2019-12-29 20:54:15.009][main.go:11][main.main][ERROR]Error 这是一条测试的日志
+[2019-12-29 20:54:44.769][main.go:11][main.main][ERROR]Error 这是一条测试的日志
