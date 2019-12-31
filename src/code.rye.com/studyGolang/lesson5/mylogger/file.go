@@ -16,6 +16,7 @@ type FileLogger struct {
 	filePath string
 	file *os.File
 	errFile *os.File
+	maxSize int64 // 按照日志文件大小进行切分
 }
 
 // NewFileLogger 文件日志结构体构造函数
@@ -25,6 +26,7 @@ func NewFileLogger(levelStr, fileName, filePath string) *FileLogger {
 		level: logLevel,
 		fileName: fileName,
 		filePath: filePath,
+		maxSize: 10 * 1024 * 1024,
 	}
 	fl.initFile() // 根据上面的文件路径和文件名打开日志文件，把文件句柄赋值给结构体对应的字段
 	return fl
@@ -50,6 +52,31 @@ func (f *FileLogger) initFile() {
 	f.errFile = errFileObj
 }
 
+// 检查是否需要拆分
+func (f *FileLogger) checkSplit(file *os.File) bool {
+	fileInfo, _ := file.Stat()
+	fileSize := fileInfo.Size()
+	return fileSize >= f.maxSize // 当前进来的日志文件大小超过maxSize，就返回true
+}
+
+// 封装一个切分日志文件的方法
+func (f *FileLogger) splitLogFile(file *os.File) *os.File {
+	// 判断当前日志文件的大小是否超过了maxSize
+	// 切分文件
+	fileName := file.Name() // 拿到文件的完整路径
+	backupName := fmt.Sprintf("%s_%v.back", fileName, time.Now().Unix())
+	// 1. 把原来的文件关闭
+	file.Close()
+	// 2. 备份原来的文件
+	os.Rename(fileName, backupName)
+	// 3. 新建一个文件
+	fileObj, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0664)
+	if err != nil {
+		panic(fmt.Errorf("打开日志文件失败"))
+	}
+	return fileObj
+}
+
 // 将公用的记录日志的功能封装成一个单独的方法
 func (f *FileLogger) log(level Level, format string, args ...interface{})  {
 	if f.level > level {
@@ -68,10 +95,16 @@ func (f *FileLogger) log(level Level, format string, args ...interface{})  {
 	logLevelStr := getLevelStr(level)
 	logMsg := fmt.Sprintf("[%s][%s:%d][%s][%s]%s", 
 		nowStr, fileName, line, funcName, logLevelStr, msg)
-
+	// 往文件里面写之前要做一个检查
+	if f.checkSplit(f.file) {
+		f.file = f.splitLogFile(f.file)
+	}
 	fmt.Fprintln(f.file, logMsg) // 利用fmt包将msg字符串写入f.file文件中
 
 	if level >= ErrorLevel {
+		if f.checkSplit(f.errFile) {
+			f.errFile = f.splitLogFile(f.errFile)
+		}
 		fmt.Fprintln(f.errFile, logMsg)
 	}
 }
@@ -133,4 +166,10 @@ func (f *FileLogger) Error(format string, args ...interface{})  {
 // Fatal fatal方法
 func (f *FileLogger) Fatal(format string, args ...interface{})  {
 	f.log(FatalLevel, format, args...)
+}
+
+// Close 关闭日志文件句柄
+func (f *FileLogger) Close()  {
+	f.file.Close()
+	f.errFile.Close()
 }

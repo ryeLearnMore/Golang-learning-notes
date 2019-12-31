@@ -17,6 +17,16 @@ const (
 	FatalLevel
 )
 
+// 定义一个接口，使之可以随时方便调用
+type Logger interface {
+	Debug(format string, args ...interface{})
+	Info(format string, args ...interface{})
+	Warn(format string, args ...interface{})
+	Error(format string, args ...interface{})
+	Fatal(format string, args ...interface{})
+	Close()
+}
+
 // 写一个根据传进来的Level获取对应的字符串
 func getLevelStr(level Level) string {
 	switch level {
