@@ -14,8 +14,4 @@ func init() {
 // Add 加法
 func Add(x, y int) int {
 	return x + y
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> b8b8846bb2ebee45314a4febc66b0f8ab5fed2ee
