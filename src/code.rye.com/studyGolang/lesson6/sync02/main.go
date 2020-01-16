@@ -8,17 +8,27 @@ import (
 
 var x int64
 var wg sync.WaitGroup
+var lock sync.Mutex // 互斥锁
+var rwLock sync.RWMutex // 读写互斥锁：多个goroutine同时读加的是读锁，写的时候加的是写锁
 
 func read()  {
 	defer wg.Done()
+	// lock.Lock()
+	rwLock.RLock() // 加读锁
 	fmt.Println(x)
+	// lock.Unlock()
 	time.Sleep(time.Millisecond * 10)
+	rwLock.RUnlock() // 释放读锁
 }
 
 func write()  {
 	defer wg.Done()
-	x ++
+	// lock.Lock()
+	rwLock.Lock() // 加写锁
+	x++
+	// lock.Unlock()
 	time.Sleep(time.Millisecond * 50)
+	rwLock.Unlock() // 释放写锁
 }
 
 func main()  {
