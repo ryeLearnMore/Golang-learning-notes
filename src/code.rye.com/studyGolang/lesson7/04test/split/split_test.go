@@ -3,6 +3,8 @@ package split
 import (
 	"reflect"
 	"testing"
+	"os"
+	"fmt"
 )
 
 func TestSplit(t *testing.T)  {
@@ -69,4 +71,13 @@ func BenchmarkSplit(b *testing.B)  {
 	for i := 0; i < b.N; i++ {
 		Split("a:b:c", ":")
 	}
+}
+
+// 整个测试之前做的事和之后做的事
+func TestMain(m *testing.M)  {
+	fmt.Println("write setup code here.") // 测试之前做一些设置
+	// 如果TestMain使用了flags，这里应该加上flag.Parse()
+	retCode := m.Run() // 执行测试
+	fmt.Println("write teardown code here") // 测试之后做一些拆卸工作
+	os.Exit(retCode)
 }
