@@ -155,6 +155,35 @@ func editBookHandler(c *gin.Context) {
 	}
 }
 
+func bookDetailHandler(c *gin.Context) {
+	// 1. 获取书籍ID
+	tmpBookID := c.Param("id") // string类型的参数
+	if len(tmpBookID) == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"err": "invalid path param",
+		})
+		return
+	}
+	bookID, err := strconv.ParseInt(tmpBookID, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"err": "invalid path param",
+		})
+		return
+	}
+
+	// 2. 去数据库拿到具体的书籍信息
+	bookObj, err := queryBookByID(bookID)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
+	// 3. 返回json格式的数据
+	c.JSON(http.StatusOK, bookObj)
+}
+
 func main() {
 	// 程序一启动就应该连接数据库
 	err := initDB()
@@ -171,5 +200,8 @@ func main() {
 	r.GET("/book/delete", deleteBookHandler)
 	// day11
 	r.Any("/book/edit", editBookHandler)
+
+	// 组合查询
+	r.GET("/book/detail/:id", bookDetailHandler)
 	r.Run()
 }

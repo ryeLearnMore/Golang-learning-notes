@@ -37,7 +37,19 @@ func queryAllBook() (bookList []*Book, err error) {
 // day 11
 // 查询单个数据
 func queryBookByID(id int64) (book Book, err error) {
-	sqlStr := "select id, title, price from book where id = ?;"
+	// sqlStr := "select id, title, price from book where id = ?;"
+	sqlStr :=
+		`
+	select
+		book.id, book.title, book.price, publisher.province, publisher.city
+	from
+		book
+	inner join
+		publisher
+	on book.publisher_id = publisher.id
+	where
+		book.id = ?
+		`
 	err = db.Get(&book, sqlStr, id)
 	if err != nil {
 		fmt.Println("查询该书籍信息失败！")
